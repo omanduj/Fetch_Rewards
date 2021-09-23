@@ -38,7 +38,7 @@ def insert_info(payer, points, time_zone):
     conn.close()
 
 
-def update_info_sub(payer, points):
+def update_info_sub(points):
     """Purpose: To update a given users information when points are used
        Paramaters: payer = the name of a user, points = the amounts the user has and
                             time_zone = the time points were obtained
@@ -47,11 +47,11 @@ def update_info_sub(payer, points):
     conn = sqlite3.connect("fetch_rewards.db")
     c = conn.cursor()
 
-    points_db = c.execute("SELECT SUM(points) FROM fetch_rewards WHERE payer = '{}'".format(payer))
+    points_db = c.execute("SELECT SUM(points) FROM fetch_rewards")
     points_db = points_db.fetchone()
 
     if(points_db[0] - int(points) >= 0):
-        c.execute("UPDATE fetch_rewards SET points = (points - '{}') WHERE payer = '{}' AND time_zone = (SELECT MIN(time_zone) FROM fetch_rewards)".format(points, payer))
+        c.execute("UPDATE fetch_rewards SET points = (points - '{}') WHERE time_zone = (SELECT MIN(time_zone) FROM fetch_rewards)".format(points))
     if (points_db[0] - int(points) <= 0):
         return "error"
     conn.commit()
